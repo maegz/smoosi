@@ -4,12 +4,12 @@ import {
   applyMiddleware
 } from 'redux';
 import thunk from 'redux-thunk';
-import todos from '../reducers/todos';
+import posts from '../reducers/posts';
 import error from '../reducers/errors';
 import user from '../reducers/users';
 
 const rootReducer = combineReducers({   
-  todos,
+  posts,
   user,
   error
 });
