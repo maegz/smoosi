@@ -13,7 +13,7 @@ export default function PostWall(props) {
     vote,
     text } = props;
 
-  const allPosts = posts.map(post =>
+    const allPosts = posts.map(post =>
     <div key={ post.key }>
       <h3>{ post.text }</h3>
       { props.currentUser.uid === post.madeBy 

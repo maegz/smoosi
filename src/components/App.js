@@ -8,8 +8,8 @@ import '../styles/App.css';
 class App extends Component {
   
   state ={ loading: true };
-  
-  componentDidMount(){
+
+  componentDidMount() {
     setTimeout(() => { this.setState({ loading: false }) }, 1000);
     this.props.addPostListener();
     this.props.changePostListener();

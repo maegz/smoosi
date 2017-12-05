@@ -1,34 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react';
 import firebase from '../firebase';
 
-export default function RatePost(props) {
-
-  const { currentUser, vote, post } = props;
+export default class RatePost extends Component {
   
-  function incrementVote(post) {
-    vote(post, 1, currentUser);
+  state = {
+    isClickedUp: false,
+    isClickedDown: false
   }
   
-  function decrementVote(post) {
-    vote(post, -1, currentUser)
+  componentWillMount() {
+    firebase.database().ref(`users/${this.props.currentUser.uid}/votes/${this.props.post.key}`)
+      .on("value", post => {
+        if (post.val() ===    1) { this.setState({ isClickedUp: true,  isClickedDown: false }) }
+        if (post.val() ===   -1) { this.setState({ isClickedUp: false, isClickedDown: true  }) }
+        if (post.val() === null) { this.setState({ isClickedUp: false, isClickedDown: false }) }
+      });
   }
   
+  incrementVote = (post) => { this.props.vote(post, 1, this.props.currentUser) };
+  decrementVote = (post) => { this.props.vote(post, -1, this.props.currentUser) };
   
-  return(
-    <div className="ratePost">
+  render() {
+    const { currentUser, post } = this.props;
+    const { isClickedUp, isClickedDown } = this.state;
+    
+    const buttonUpIsClicked = isClickedUp === true ? { background: "green" } : { background: "gray" };
+    const buttonDownIsClicked = isClickedDown === true ? { background: "red" } : { background: "gray" };
+    
+    return(
+      <div className="ratePost">
       { currentUser.uid === post.madeBy 
       ? <div>{ post.votes }</div> 
       : <div>
-          <button className="button" onClick={ () => incrementVote(post) }>
+          <button style={ buttonUpIsClicked } className="button" onClick={ () => this.incrementVote(post) }>
             <span className="glyphicon glyphicon-thumbs-up"></span>
           </button>
           { post.votes }
-          <button className="button" onClick={ () => decrementVote(post) }>
+          <button style={ buttonDownIsClicked } className="button" onClick={ () => this.decrementVote(post) }>
             <span className="glyphicon glyphicon-thumbs-down"></span>
           </button>
         </div>
       }
-  </div>
-  )
-
+    </div>
+    )
+  } 
 }

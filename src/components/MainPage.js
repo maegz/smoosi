@@ -20,7 +20,6 @@ export default class MainPage extends Component {
   }
   
   render() {
-
     const currentUser = firebase.auth().currentUser;
 
     return (

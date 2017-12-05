@@ -6,9 +6,9 @@ export function userChanged() {
       if (user) {
         console.log(user.uid);
         firebase.database().ref(`users/${user.uid}`).once('value')
-        .then(user => {
-          dispatch({ type: "SIGN_IN", user: user });
-        });
+          .then(user => {
+            dispatch({ type: "SIGN_IN", user: user });
+          });
       } else {
         console.log(user);
         dispatch({ type: "SIGN_OUT", user: null });
