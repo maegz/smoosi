@@ -7,7 +7,7 @@ import '../styles/App.css';
 
 class App extends Component {
   
-  state ={ loading: true };
+  state = { loading: true, users: [] };
 
   componentDidMount() {
     setTimeout(() => { this.setState({ loading: false }) }, 1000);
@@ -15,6 +15,7 @@ class App extends Component {
     this.props.changePostListener();
     this.props.removePostListener();
     this.props.userChanged();
+    this.props.fetchUsers();
   }
   
   render() {

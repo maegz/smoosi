@@ -4,16 +4,26 @@ export function userChanged() {
   return function(dispatch) {
     return firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log(user.uid);
         firebase.database().ref(`users/${user.uid}`).once('value')
           .then(user => {
             dispatch({ type: "SIGN_IN", user: user });
           });
       } else {
-        console.log(user);
         dispatch({ type: "SIGN_OUT", user: null });
       }
     });
+  }
+}
+
+export function fetchUsers() {
+  return function(dispatch) {
+    return firebase.database().ref(`users`).on('value', users => {
+      let tempList = [];
+      users.forEach(child => {
+        tempList.push({ ...child.val(), key: child.key });
+      })
+      dispatch({ type: "FETCH_ALL_USERS", users: tempList })
+    })
   }
 }
 
@@ -53,7 +63,6 @@ export function vote(post, clickedValue, user) {
         // If the users database-vote doesn't match the clicked value,
         // the new vote-value is set and the users database-vote is set.
         if (currentUserDatabaseValue !== clickedValue) {
-          console.log("röst lagd: ", clickedValue)
           thisPostVote.set(post.votes += clickedValue)
             .then(thisUserPostVote.set(clickedValue))
             .catch(error => { dispatch({ type: "FETCH_ERROR", error: error.message }) });
@@ -63,7 +72,6 @@ export function vote(post, clickedValue, user) {
         // the new vote-value is the opposite to the clicked value
         // and the users database-vote is removed.
         else {
-          console.log("röst borttagen")
           thisPostVote.set(post.votes -= clickedValue)
             .then(thisUserPostVote.remove())
             .catch(error => { dispatch({ type: "FETCH_ERROR", error: error.message }) });    
@@ -73,7 +81,6 @@ export function vote(post, clickedValue, user) {
     // If the current user did create this post, voting isn't possible.
     else {
       dispatch({ type: "FETCH_ERROR", error: "You can't vote on your own smoosi recipe!"})
-      console.log("You can't vote on your own smoosi recipe!")
     }
   }
 }
@@ -88,7 +95,6 @@ export function vote(post, clickedValue, user) {
 */
 export function addPost(post){
   return function(dispatch){
-    console.log(post)
     firebase.database().ref(`posts`).push(post)
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
@@ -97,9 +103,9 @@ export function addPost(post){
 }
 
 
-/**
- * When removing post, also remove all user-votes on the very same post.
- */
+/*
+* When removing post, also remove all user-votes on the very same post.
+*/
 export function removePost(post) {
   return function (dispatch) {
     firebase.database().ref("users").once("value")

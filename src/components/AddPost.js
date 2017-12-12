@@ -11,7 +11,7 @@ export default function AddPost(props) {
       votes: 0
     });
   }
-
+  
   return (
     <div className="addPost">
       <input type="text" onChange={ props.onChange } name="value" value={ props.text } />
