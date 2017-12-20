@@ -14,32 +14,44 @@ export default class MainPage extends Component {
     value: "",
     isUserAdmin: ""
   }
-  
-  componentWillMount() {
-    firebase.database().ref(`users/${firebase.auth().currentUser.uid}/isAdmin`)
-      .on("value", isAdmin => {
-        this.setState({ isUserAdmin: isAdmin.val() });
-    });
+
+  componentDidMount() {
+    this.getUserAdminValue();
   }
-  
+
+  componentWillReceiveProps() {
+    this.getUserAdminValue();
+  }
+
   onChange = e => this.setState({ [e.target.name]: e.target.value})
-  
+
   signOut = () => {
     firebase.auth().signOut();
   }
-  
+
+  getUserAdminValue = () => {
+    if (firebase.auth().currentUser) {
+      firebase.database().ref(`users/${firebase.auth().currentUser.uid}/isAdmin`)
+        .on("value", isAdmin => {
+          this.setState({ isUserAdmin: isAdmin.val() });
+      });
+    }
+  }
+
   render() {
+
     const currentUser = firebase.auth().currentUser;
+
     return (
       <div className="mainPage">
-        { this.props.user
-          ? 
+        { currentUser
+          ?
             <div>
               <button className="button" onClick={ this.signOut }>Sign Out</button>
               <h1>Hej { currentUser.email }!</h1>
               <AddPost  { ...this.props } text={ this.state.value } onChange={ this.onChange } />
               <PostWall { ...this.props } isAdmin={ this.state.isUserAdmin } text={ this.state.value } currentUser={ currentUser } />
-              
+
               { this.state.isUserAdmin === true
                 ?
                   <div>
@@ -49,7 +61,7 @@ export default class MainPage extends Component {
                   ""
               }
             </div>
-          : 
+          :
             <LoginOrRegister onChange={ this.onChange } state={ this.state } currentUser={ currentUser } />
         }
       </div>

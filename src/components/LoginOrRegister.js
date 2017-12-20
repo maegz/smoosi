@@ -18,13 +18,13 @@ export default function LoginOrRegister(props) {
           votes: {}
         }
         firebase.database().ref(`users/${user.uid}`).set(newUser);
-      })
+      });
   }
 
   function signIn() {
     firebase.auth().signInWithEmailAndPassword(email, password)
   }
-  
+
   return (
     <div className="logInForm" >
       *IMAGE HERE*
